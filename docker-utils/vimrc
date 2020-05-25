@@ -1,0 +1,29 @@
+set term=builtin_ansi
+
+filetype plugin indent on
+syntax on
+
+" ## GUI
+set encoding=UTF-8
+set title
+set mouse=a
+
+" ## Lines
+set number relativenumber
+set nowrap
+
+" ## Indentation
+set tabstop=3
+set shiftwidth=3
+set softtabstop=3
+set shiftround
+set expandtab
+
+" Delete with backspace
+set backspace=indent,eol,start
+
+" ## Buffers
+set hidden  " Allow change buffers without saving
+
+" ## Spellchecker
+set spelllang=en,es

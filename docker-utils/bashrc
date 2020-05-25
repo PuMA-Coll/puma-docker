@@ -1,0 +1,48 @@
+export PGPLOT_DIR=/usr/lib/pgplot5 
+export PGPLOT_FONT=/usr/lib/pgplot5/grfont.dat 
+export PGPLOT_INCLUDES=/usr/include 
+export PGPLOT_BACKGROUND=white 
+export PGPLOT_FOREGROUND=black 
+export PGPLOT_DEV=/xs
+export PSRHOME=/opt/pulsar
+export PRESTO=$PSRHOME/presto 
+export PATH=$PATH:$PRESTO/bin 
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PRESTO/lib 
+export PYTHONPATH=$PYTHONPATH:$PRESTO/lib/python
+export PSRCHIVE=$PSRHOME/psrchive 
+export PATH=$PATH:$PSRCHIVE/install/bin 
+export C_INCLUDE_PATH=$C_INCLUDE_PATH:$PSRCHIVE/install/include 
+export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PSRCHIVE/install/lib 
+export PYTHONPATH=$PYTHONPATH:$PSRCHIVE/install/lib/python2.7/site-packages 
+export PYTHONPATH=$PSRHOME/lib/python2.7/site-packages:${PYTHONPATH}
+export TEMPO=$PSRHOME/tempo 
+export PATH=$PATH:$PSRHOME/tempo/bin
+export TEMPO2=$PSRHOME/share/tempo2
+export PATH=/opt/conda/bin:${PATH}:${PSRHOME}/bin
+
+export PYTHONPATH=$PYTHONPATH:/opt/pulsar/puma/scripts
+
+source $HOME/.git-prompt.sh
+source $HOME/.git-completion.bash
+
+# PS1 terminal prompt
+PS1="[\[\033[01;32m\]jovyan@docker \[\033[00m\]\[\033[01;34m\]\W\[\033[00m\]"
+PS1="$PS1\$(__git_ps1 ' \[\033[0;31m\]%s\[\033[00m\]')]\$ "
+
+# set VIM as the GLORIOUSUS editor
+export EDITOR="vim"
+
+# also add git repo of puma to PATH
+export PATH=$PATH:/opt/pulsar/puma/scripts
+
+# List with colors and directories first
+alias ls="ls -hN --color=auto --group-directories-first"
+alias ll='ls -l'
+alias la='ls -A'
+alias l='ls -CF'
+
+# some alias
+alias pumasrc="cd /opt/pulsar/puma && ls -a"
+
+alias e="vim"
+alias v="vim"
