@@ -1,0 +1,11 @@
+alias ls="ls -hN --color=auto --group-directories-first"
+alias ll="ls -l"
+alias la="ls -A"
+alias l="ls -CF"
+
+alias ipython="ipython --no-confirm-exit"
+
+alias e="$EDITOR"
+alias v="$EDITOR"
+
+alias pumasrc="cd /opt/pulsar/puma && ls -a"

@@ -3,11 +3,11 @@
 #
 if [ ! -d /home/jovyan/work/custom/lib ]
   then
-    mkdir -p /home/jovyan/work/custom/lib
+    mkdir -p /home/jovyan/work/custom/lib 
 fi
 if [ ! -d /home/jovyan/work/custom/bin ]
   then
-    mkdir -p /home/jovyan/work/custom/bin
+    mkdir -p /home/jovyan/work/custom/bin 
 fi
 
-/usr/sbin/sshd
+/usr/sbin/sshd 

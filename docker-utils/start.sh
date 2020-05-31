@@ -17,7 +17,8 @@ if [ $(id -u) == 0 ] ; then
         # container is started. Use the $NB_USER home path explicitly.
         for d in "$CONDA_DIR" "$JULIA_PKGDIR" "/home/$NB_USER"; do
             if [[ ! -z "$d" && -d "$d" ]]; then
-               chown -R $NB_UID "$d"
+                echo "Set ownership to uid $NB_UID: $d"
+                chown -R $NB_UID "$d"
             fi
         done
     fi
@@ -38,7 +39,7 @@ if [ $(id -u) == 0 ] ; then
     echo "Execute the command as $NB_USER"
     exec su $NB_USER -c "env PATH=$PATH $*"
 else
-   if [[ ! -z "$NB_UID" && "$NB_UID" != "$(id -u)" ]]; then
+  if [[ ! -z "$NB_UID" && "$NB_UID" != "$(id -u)" ]]; then
       echo 'Container must be run as root to set $NB_UID'
   fi
   if [[ ! -z "$NB_GID" && "$NB_GID" != "$(id -g)" ]]; then
