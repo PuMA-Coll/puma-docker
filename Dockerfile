@@ -306,8 +306,10 @@ WORKDIR /usr/lib
 RUN tar xvfz clig.tar.gz
 RUN apt install -y tk
 
+
 # install aft
-USER jovyan
+USER root
+WORKDIR /home/jovyan
 RUN git clone https://github.com/nategarver-daniels/afr.git
 RUN /bin/bash -c "cd afr && git pull && make && make install"
 
@@ -322,5 +324,6 @@ USER jovyan
 RUN cd /opt/pulsar && git clone https://github.com/PuMA-Coll/PuMA.git puma
 
 
+USER root
 WORKDIR /home/jovyan/work
 EXPOSE 22
