@@ -37,7 +37,7 @@ docker exec -it puma /bin/bash
 
 You should have a new prompt that looks as follows,
 
-[]: https://github.com/PuMA-Coll/puma-docker/blob/master/docker-prompt.png
+![prompt](https://github.com/PuMA-Coll/puma-docker/blob/master/docker-prompt.png "docker prompt")
 
 Once in here, you can make yourself the root with the command `su`, and set a password by running `passwd jovyan`.
 
