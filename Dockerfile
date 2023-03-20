@@ -66,48 +66,28 @@ RUN wget --no-check-certificate -q https://www.imcce.fr/content/medias/recherche
     cd .. && rm -rf calceph-2.3.2 calceph-2.3.2.tar.gz
 
 
-# make tempo2
-USER jovyan
-ENV TEMPO2=/opt/pulsar/share/tempo2
-RUN wget -q https://bitbucket.org/psrsoft/tempo2/get/master.tar.gz && \
-    tar zxf master.tar.gz && \
-    cd psrsoft-tempo2-* && \
-    ./bootstrap && \    
-    CPPFLAGS="-I/opt/pulsar/include" LDFLAGS="-L/opt/pulsar/lib" ./configure --prefix=/opt/pulsar --with-calceph=/opt/pulsar/ && \
-    make && make install && make plugins && make plugins-install && \
-    mkdir -p /opt/pulsar/share/tempo2 && \
-    cp -Rp T2runtime/* /opt/pulsar/share/tempo2/. && \
-    cd .. && rm -rf psrsoft-tempo2-* master.tar.gz
+USER root
+COPY docker-utils/requirements.txt /var/tmp/requirements.txt
+RUN /bin/bash -c "source activate python2; pip install -r /var/tmp/requirements.txt"
+RUN pip install -r /var/tmp/requirements.txt
 
-
-# get extra ephemeris
-USER jovyan
-RUN cd /opt/pulsar/share/tempo2/ephemeris && \
-    wget -q ftp://ssd.jpl.nasa.gov/pub/eph/planets/bsp/de435t.bsp && \
-    wget -q ftp://ssd.jpl.nasa.gov/pub/eph/planets/bsp/de436t.bsp 
 
 
 # install libstempo (before other Anaconda packages, esp. matplotlib, so there's no libgcc confusion)
 USER jovyan
-RUN git clone https://github.com/vallis/libstempo.git && \
-    cd libstempo && \
-    pip install .  --global-option="build_ext" --global-option="--with-tempo2=/opt/pulsar" && \
-    cp -rp demo /home/jovyan/libstempo-demo && chown -R jovyan /home/jovyan/libstempo-demo && \
-    /bin/bash -c "source activate python2 && \
-    pip install .  --global-option=\"build_ext\" --global-option=\"--with-tempo2=/opt/pulsar\"" && \
-    cd .. && rm -rf libstempo
+RUN /bin/bash -c "source activate python2; pip install libstempo==2.3.5"
 
 
 # non-standard-Anaconda packages
 USER jovyan
-RUN /bin/bash -c "source activate python2 && pip install healpy acor line_profiler"
-RUN pip install healpy acor line_profiler
+RUN /bin/bash -c "source activate python2; pip install healpy acor==1.1.1 line_profiler==2.1.2"
 
 
 # install PTMCMCSampler
 USER jovyan
 RUN git clone https://github.com/jellis18/PTMCMCSampler && \
     cd PTMCMCSampler && \
+    git checkout -b develop origin/develop && \
     /bin/bash -c "source activate python2 && pip install . " && \
     cd .. && rm -rf PTMCMCSampler
 
@@ -140,16 +120,63 @@ ENV PATH=$PATH:$PRESTO/bin
 ENV LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$PRESTO/lib 
 ENV PYTHONPATH=$PYTHONPATH:$PRESTO/lib/python
 
+USER root
+COPY docker-utils/requirements.txt /var/tmp/requirements.txt
+RUN /bin/bash -c "source activate python2; pip install -r /var/tmp/requirements.txt"
+RUN pip install -r /var/tmp/requirements.txt
+
+
+# install tempo
+USER jovyan
+ENV TEMPO=$PSRHOME/tempo
+ENV PATH=$PATH:$PSRHOME/tempo/bin
+RUN git clone https://github.com/gui-iar/tempo.git
+RUN mv tempo $PSRHOME
+WORKDIR ${TEMPO}
+RUN ./prepare && \
+    ./configure --prefix=$PSRHOME/tempo && \
+    make && \
+    make install && \
+    cd util/print_resid && \
+    make
+
+# make tempo2
+USER jovyan
+ENV TEMPO2=/opt/pulsar/share/tempo2
+RUN git clone https://github.com/gui-iar/tempo2.git psrsoft-tempo2-master && \
+    cd psrsoft-tempo2-* && \
+    ./bootstrap && \
+    CPPFLAGS="-I/opt/pulsar/include" LDFLAGS="-L/opt/pulsar/lib" ./configure --prefix=/opt/pulsar --with-calceph=/opt/pulsar/ && \
+    make && make install && make plugins && make plugins-install && \
+    mkdir -p /opt/pulsar/share/tempo2 && \
+    cp -Rp T2runtime/* /opt/pulsar/share/tempo2/. && \
+    cd .. && rm -rf psrsoft-tempo2-*
+
+
+# get extra ephemeris
+USER jovyan
+RUN cd /opt/pulsar/share/tempo2/ephemeris && \
+    wget -q ftp://ssd.jpl.nasa.gov/pub/eph/planets/bsp/de435t.bsp && \
+    wget -q ftp://ssd.jpl.nasa.gov/pub/eph/planets/bsp/de436t.bsp
+
 
 # install presto
 USER jovyan
-RUN git clone https://github.com/PuMA-Coll/presto.git
+RUN git clone https://github.com/gui-iar/presto.git && \
+    cd presto && \
+    git checkout -b v2.2maint origin/v2.2maint && \
+    cd ..
 RUN mv presto $PSRHOME/presto
 WORKDIR $PRESTO/src
-RUN make prep && \
-    make
+RUN /bin/bash -c "source activate python2 && \
+    make makewisdom && \
+    make prep && \
+    make && \
+    cd ../python && \
+    make && \
+    cd ../src " 
 WORKDIR $PRESTO
-RUN /bin/bash -c "pip install ."
+#RUN /bin/bash -c "source activate python2; pip install ."
 # this is what was needed before, now only python3.x
 # WORKDIR $PRESTO/python
 # RUN /opt/conda/envs/python2/bin/python setup.py install --home=$PRESTO 
@@ -183,26 +210,9 @@ RUN ln -sf /home/jovyan/work/custom/bin /home/jovyan/.local/bin
 
 USER root
 COPY docker-utils/requirements.txt /var/tmp/requirements.txt
-RUN /bin/bash -c "source activate python2 && pip install -r /var/tmp/requirements.txt"
+RUN /bin/bash -c "source activate python2; pip install -r /var/tmp/requirements.txt"
 RUN pip install -r /var/tmp/requirements.txt
 
-
-# install tempo
-USER jovyan
-ENV TEMPO=$PSRHOME/tempo 
-ENV PATH=$PATH:$PSRHOME/tempo/bin
-RUN git clone git://git.code.sf.net/p/tempo/tempo
-RUN mv tempo $PSRHOME
-WORKDIR ${TEMPO}
-# - patch IAR info in tempo obsys.dat file
-COPY docker-utils/obsys.patch .
-RUN patch < obsys.patch && rm obsys.patch
-RUN ./prepare && \
-    ./configure --prefix=$PSRHOME/tempo && \
-    make && \
-    make install && \
-    cd util/print_resid && \
-    make
 
 
 # install Piccard
@@ -322,6 +332,15 @@ RUN chown -R jovyan:users /home/jovyan
 # lastly, clone PuMA
 USER jovyan
 RUN cd /opt/pulsar && git clone https://github.com/PuMA-Coll/PuMA.git puma
+
+USER jovyan
+RUN git clone https://github.com/gui-iar/puma-call.git config_files && \
+    cd config_files && \
+    tar -zxvf par_files.tar.gz && \
+    tar -zxvf ini_files.tar.gz && \
+    mv ini_files/* /opt/pulsar/puma/config/ && \
+    mkdir /opt/pulsar/puma/pardir/ && \
+    mv par_files/* /opt/pulsar/puma/pardir/     
 
 
 USER root
