@@ -233,6 +233,15 @@ RUN git clone https://github.com/vhaasteren/piccard.git && \
 #    python setup.py install && \
 #    /bin/bash -c "source /opt/conda/bin/activate python2 && python setup.py install"
 
+#install SpS
+USER jovyan
+RUN bash -c "source /opt/conda/bin/activate python2 && \
+    pip install tables==3.3.0 && \
+    git clone https://github.com/danielemichilli/SpS.git && \
+    cd SpS && \
+    pip install . && \
+    cythonize -i sps/src/C_Funct.pyx"
+
 
 # install psrfits
 USER root
