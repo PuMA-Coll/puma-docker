@@ -299,6 +299,24 @@ RUN git clone https://github.com/demorest/tempo_utils.git && \
     cd tempo_utils && \
     /bin/bash -c "source /opt/conda/bin/activate python2 && python setup.py install"
 
+#install SpS
+USER jovyan
+RUN bash -c "source /opt/conda/bin/activate python2 && \
+    pip install tables==3.3.0 && \
+    git clone https://github.com/danielemichilli/SpS.git && \
+    cd SpS && \
+    pip install . && \
+    cythonize -i sps/src/C_Funct.pyx"
+
+
+#install RFIClean
+USER jovyan
+RUN bash -c "source /opt/conda/bin/activate python2 && \
+    git clone https://github.com/gui-iar/RFIClean.git && \
+    cd RFIClean/ && \
+    make && \
+    make install"
+  
 
 # this also fails because of PINT
 #USER jovyan
