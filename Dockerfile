@@ -300,6 +300,11 @@ RUN git clone https://github.com/demorest/tempo_utils.git && \
     /bin/bash -c "source /opt/conda/bin/activate python2 && python setup.py install"
 
 
+# install libstempo
+USER jovyan
+RUN pip install libstempo==2.3.5
+
+
 # this also fails because of PINT
 #USER jovyan
 #RUN  git clone https://github.com/nanograv/enterprise && \
