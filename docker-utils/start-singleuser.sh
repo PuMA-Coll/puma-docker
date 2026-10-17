@@ -20,8 +20,7 @@ then
     notebook_arg="--notebook-dir=${NOTEBOOK_DIR}"
 fi
 
-exec /usr/sbin/sshd
-
+# SSH is started by start-notebook.sh before this JupyterHub entrypoint.
 exec jupyterhub-singleuser \
   --port=8888 \
   --ip=0.0.0.0 \

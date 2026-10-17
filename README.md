@@ -23,11 +23,12 @@ One cool thing about docker is the ability to share locations. Thus, you can lin
 docker when you first run it. For example,
 
 ```
-docker run -d -v /path/in/your/work/tree:/home/jovyan/work/shared -p 8888:8888 -p 2222:22 --name puma puma/docker-puma
+docker run -d -v /path/in/your/work/tree:/home/jovyan/work/shared -p 127.0.0.1:8888:8888 -p 127.0.0.1:2222:22 --name puma puma/docker-puma
 ```
 
 This example will have you share the info you have in `/path/in/your/work/tree/` with docker.  It will also create an
-instance of a running container (check that it is actually working with `docker ps`)
+instance of a running container (check that it is actually working with `docker ps`). The loopback-only port bindings
+keep SSH and Jupyter accessible from the local host without publishing them on the network.
 
 The next thing you need to do is connect with the docker to change the password of the user (named `jovyan`):
 

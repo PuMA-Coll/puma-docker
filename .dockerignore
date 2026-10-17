@@ -1,0 +1,7 @@
+.git
+.gitignore
+*.pyc
+__pycache__/
+*.swp
+README.md
+docker-prompt.png
