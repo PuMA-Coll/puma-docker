@@ -276,8 +276,8 @@ COPY docker-utils/tai2tt_bipm2016.clk /opt/pulsar/share/tempo2/clock/tai2tt_bipm
 COPY docker-utils/ao2gps.clk /opt/pulsar/share/tempo2/clock/ao2gps.clk
 COPY docker-utils/gbt2gps.clk /opt/pulsar/share/tempo2/clock/gbt2gps.clk
 COPY docker-utils/bashrc /home/jovyan/.bashrc
-COPY docker-utils/profile /home/jovyan/.bash_profile
-COPY docker-utils/bash_profile /home/jovyan/.profile
+COPY docker-utils/profile /home/jovyan/.profile
+COPY docker-utils/bash_profile /home/jovyan/.bash_profile
 COPY docker-utils/bash_aliases /home/jovyan/.bash_aliases
 COPY docker-utils/vimrc /home/jovyan/.vimrc
 COPY docker-utils/git-completion.bash /home/jovyan/.git-completion.bash
