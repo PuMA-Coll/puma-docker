@@ -191,9 +191,11 @@ RUN mv psrchive $PSRHOME
 WORKDIR $PSRCHIVE
 RUN /bin/bash -c "source /opt/conda/bin/activate python2; \
     ./bootstrap; \
-    ./configure F77=gfortran --prefix=$PSRHOME --enable-shared CFLAGS=\"-fPIC -std=gnu11 -DHAVE_CFITSIO\" CXXFLAGS=\"-std=gnu -DHAVE_CFITSIO\" FFLAGS=\"-fPIC\";\
+    printf '#include <complex>\nusing std::complex;\n' > /tmp/psrchive-cxx-compat.h; \
+    ./configure F77=gfortran --prefix=$PSRHOME --enable-shared CFLAGS=\"-fPIC -std=gnu11 -DHAVE_CFITSIO\" CXXFLAGS=\"-std=gnu++11 -DHAVE_CFITSIO\" FFLAGS=\"-fPIC\";\
     ./packages/epsic.csh;\
-    ./configure F77=gfortran --prefix=$PSRHOME --enable-shared CFLAGS=\"-fPIC -std=gnu11 -DHAVE_CFITSIO\" CXXFLAGS=\"-std=gnu -DHAVE_CFITSIO\" FFLAGS=\"-fPIC\";\
+    sed -i '/namespace true_math/a #undef signbit' Util/epsic/src/true_math/true_math.h;\
+    ./configure F77=gfortran --prefix=$PSRHOME --enable-shared CFLAGS=\"-fPIC -std=gnu11 -DHAVE_CFITSIO\" CXXFLAGS=\"-std=gnu++11 -include /tmp/psrchive-cxx-compat.h -DHAVE_CFITSIO\" FFLAGS=\"-fPIC\";\
     make && make install && make clean;" 
 RUN cp /opt/pulsar/lib/python2.7/site-packages/* /opt/conda/envs/python2/lib/python2.7/site-packages/
 
