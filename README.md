@@ -2,6 +2,10 @@
 
 This repository contains files which helps setting up a docker container with the software used by the PuMA-Coll.
 
+PuMA is the Pulsar Monitoring in Argentina program at the Argentinian
+Institute of Radioastronomy (IAR). The image provides PRESTO for the principal
+folding work and Tempo2 for TOA production and analysis.
+
 It is based on the docker built by the nanograv collab: [nanograv-docker](https://hub.docker.com/r/nanograv/ipta-docker)
 
 ## Pre-requisites
@@ -49,6 +53,32 @@ After that, logout of the docker: 'exit' (or Ctrl + d).
 In order to connect with the docker, just run `ssh -XY -p 2222 jovyan@localhost`. It will ask you for the password
 that you set up on the last step. And that's it! You have a running instance of the puma-docker with the features
 we use.
+
+## PuMA Pipeline Entry Point
+
+The PuMA dispatcher is `puma_process.py`.
+It moves uploaded observations and selects the configured pipeline. The
+current MSP list is `J0437-4715` and `J2241-5236`; these use `pipe_reduc.py`
+without glitch searches. `J1744-1134` and `J1810-197` are currently recorded
+as non-MSPs and use `pipe_pugliS.py`. Other canonical J-name pulsars must be
+added to the registry and have their `.ini`, `.par`, and `.pfd.std` assets
+verified before processing. B-name inputs must first be mapped to their J
+catalog names.
+
+Periodic execution is not enabled by the image. A future host scheduler should
+invoke `puma_process.py` when the processing system is idle and stable
+observations are waiting. Observation folders can appear while multi-GB `.fil`
+files are still being written, so folder existence alone is not a readiness
+signal. Hourly polling is an estimate, not a fixed cadence. Locking, readiness
+checks, quarantine, duplicate detection, retry, durable logging, and alerts
+must be validated first.
+
+After successful processing and local product publication, raw `.fil` files
+move to a separate staging area for Globus transfer to the storage cluster.
+Globus manages transfer verification and source-copy retention. PuMA products
+such as JSON metadata, PFDs, PNGs, `.tim` files, residuals, and masks remain
+local for analysis and the internal website. Operational `.par` files may be
+maintained outside Git on the IAR cluster.
 
 ## Notes
 
